@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario Carnicería</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #aaa;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content:center;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .remove {
+      background: #c62828;
+      padding: 6px 10px;
+      font-size: 14px;
+      width: 3em;
+      margin-left: 10px;
+    }
+
+    #sugerencias {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+    #sugerencias li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    #sugerencias li:hover {
+        background: #eee;
+    }
+        </style>
+</head>
+<body>
+
+  <h1>Inventario</h1>
+
+  <!-- FORMULARIO -->
+  <div class="card">
+    <label>Producto</label>
+    <input type="text" id="productoInput" placeholder="Escribe para buscar..." />
+    <ul id="sugerencias"></ul>
+
+    <!-- aquí después va el listado reactivo -->
+
+    <label>Unidad</label>
+    <select id="unidadSelect">
+      <option value="unidad">Unidad</option>
+      <option value="kilos">Kilos</option>
+      <option value="bandeja">Bandeja</option>
+      <option value="pieza">Pieza</option>
+      <option value="bolsa">Bolsa</option>
+    </select>
+
+    <label>Cantidad</label>
+    <input type="number" id="cantidadInput" step="0.01" placeholder="Ej: 2 o 3.5" />
+
+    <button id="agregarBtn">Agregar a la lista</button>
+  </div>
+
+  <!-- LISTA GENERADA -->
+  <div class="card">
+    <h3>Lista de inventario</h3>
+    <ul id="listaInventario"></ul>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="card">
+    <button id="descargarBtn">Descargar ticket (TXT)</button>
+  </div>
+
+  <script>
+    /****************************
+     * DATOS SIMULADOS (BD)
+     ****************************/
+    const productos = [
+      "Confort",
+      "Carne molida",
+      "Pollo entero",
+      "Pechuga de pollo",
+      "Costillar de cerdo",
+      "Longaniza",
+      "Vienesa",
+      "Hamburguesa",
+      "Carne mechada",
+      "Chuleta de cerdo"
+    ];
+
+    // Lista de inventario generada
+    let inventario = [];
+
+    console.log("Productos cargados:", productos);
+
+    const productoInput = document.getElementById("productoInput");
+  const sugerencias = document.getElementById("sugerencias");
+
+  productoInput.addEventListener("input", () => {
+    const texto = productoInput.value.toLowerCase();
+    sugerencias.innerHTML = "";
+
+    if (texto === "") return;
+
+    const resultados = productos.filter(p =>
+      p.toLowerCase().includes(texto)
+    );
+
+    resultados.forEach(producto => {
+      const li = document.createElement("li");
+      li.textContent = producto;
+
+      li.addEventListener("click", () => {
+        productoInput.value = producto;
+        sugerencias.innerHTML = "";
+      });
+
+      sugerencias.appendChild(li);
+    });
+  });
+
+    const unidadSelect = document.getElementById("unidadSelect");
+    const cantidadInput = document.getElementById("cantidadInput");
+    const agregarBtn = document.getElementById("agregarBtn");
+    const listaInventario = document.getElementById("listaInventario");
+
+    agregarBtn.addEventListener("click", () => {
+  const producto = productoInput.value.trim();
+  const unidad = unidadSelect.value;
+  const cantidad = parseFloat(cantidadInput.value);
+
+  if (!producto || isNaN(cantidad) || cantidad <= 0) {
+    alert("Completa correctamente el producto y la cantidad");
+    return;
+  }
+
+  inventario.push({ producto, unidad, cantidad });
+
+  renderInventario();
+
+  // limpiar inputs
+  productoInput.value = "";
+  cantidadInput.value = "";
+  sugerencias.innerHTML = "";
+});
+
+function renderInventario() {
+  listaInventario.innerHTML = "";
+
+  inventario.forEach((item, index) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <span>
+        ${item.producto} - ${item.cantidad} ${item.unidad}
+      </span>
+      <button class="remove">❌</button>
+    `;
+
+    li.querySelector(".remove").addEventListener("click", () => {
+      inventario.splice(index, 1);
+      renderInventario();
+    });
+
+    listaInventario.appendChild(li);
+  });
+}
+
+const descargarBtn = document.getElementById("descargarBtn");
+
+function generarTextoTicket() {
+  let texto = "INVENTARIO\n";
+  texto += "----------------\n";
+
+  inventario.forEach(item => {
+    texto += `${item.producto} - ${item.cantidad} ${item.unidad}\n`;
+  });
+
+  texto += "----------------\n";
+
+  return texto;
+}
+
+descargarBtn.addEventListener("click", () => {
+  if (inventario.length === 0) {
+    alert("No hay productos en la lista para imprimir");
+    return;
+  }
+
+  const texto = generarTextoTicket();
+  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `inventario_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  // limpiar inventario después de descargar
+  inventario = [];
+  renderInventario();
+});
+  </script>
+
+</body>
+</html>
