@@ -233,6 +233,27 @@ descargarBtn.addEventListener("click", () => {
   renderInventario();
 });
 
+  function drawTextWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(" ");
+  let line = "";
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " ";
+    const metrics = ctx.measureText(testLine);
+
+    if (metrics.width > maxWidth && i > 0) {
+      ctx.fillText(line, x, y);
+      line = words[i] + " ";
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+
+  ctx.fillText(line, x, y);
+  return y + lineHeight;
+}
+
 function generarImagenTicket() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -263,14 +284,17 @@ function generarImagenTicket() {
   ctx.textAlign = "left";
   y += lineHeight;
 
-  inventario.forEach(item => {
-    ctx.fillText(
-      `${item.producto} - ${item.cantidad} ${item.unidad}`,
-      padding,
-      y
-    );
-    y += lineHeight;
-  });
+inventario.forEach(item => {
+  const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
+  y = drawTextWrapped(
+    ctx,
+    texto,
+    padding,
+    y,
+    ancho - padding * 2,
+    lineHeight
+  );
+});
 
   const link = document.createElement("a");
   link.download = `inventario_${new Date().toISOString().slice(0,10)}.png`;
@@ -281,3 +305,4 @@ function generarImagenTicket() {
 
 </body>
 </html>
+
