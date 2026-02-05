@@ -126,7 +126,7 @@
 
   <!-- ACCIONES -->
   <div class="card">
-    <button id="descargarBtn">Descargar ticket (TXT)</button>
+    <button id="descargarBtn">Generar ticket (IMG)</button>
   </div>
 
   <script>
@@ -226,18 +226,7 @@ function renderInventario() {
 
 const descargarBtn = document.getElementById("descargarBtn");
 
-function generarTextoTicket() {
-  let texto = "INVENTARIO\n";
-  texto += "----------------\n";
-
-  inventario.forEach(item => {
-    texto += `${item.producto} - ${item.cantidad} ${item.unidad}\n`;
-  });
-
-  texto += "----------------\n";
-
-  return texto;
-}
+fconst descargarBtn = document.getElementById("descargarBtn");
 
 descargarBtn.addEventListener("click", () => {
   if (inventario.length === 0) {
@@ -245,21 +234,64 @@ descargarBtn.addEventListener("click", () => {
     return;
   }
 
-  const texto = generarTextoTicket();
-  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
+  generarImagenTicket();
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `inventario_${new Date().toISOString().slice(0,10)}.txt`;
-  a.click();
-
-  URL.revokeObjectURL(url);
-
-  // limpiar inventario después de descargar
+  // limpiar inventario después de generar
   inventario = [];
   renderInventario();
 });
+
+function generarImagenTicket() {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const ancho = 384; // ancho típico impresora térmica 58mm
+  const padding = 20;
+  const lineHeight = 36;
+  const fontSize = 28;
+
+  const alto =
+    padding * 2 +
+    lineHeight * (inventario.length + 4);
+
+  canvas.width = ancho;
+  canvas.height = alto;
+
+  // fondo blanco
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // texto
+  ctx.fillStyle = "#000";
+  ctx.font = `bold ${fontSize}px monospace`;
+  ctx.textAlign = "center";
+
+  let y = padding + fontSize;
+
+  ctx.fillText("INVENTARIO", ancho / 2, y);
+  y += lineHeight;
+
+  ctx.font = `${fontSize}px monospace`;
+  ctx.fillText("--------------------", ancho / 2, y);
+  y += lineHeight;
+
+  ctx.textAlign = "left";
+
+  inventario.forEach(item => {
+    const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
+    ctx.fillText(texto, padding, y);
+    y += lineHeight;
+  });
+
+  ctx.textAlign = "center";
+  ctx.fillText("--------------------", ancho / 2, y);
+
+  // descargar imagen
+  const link = document.createElement("a");
+  link.download = `inventario_${new Date().toISOString().slice(0,10)}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
   </script>
 
 </body>
