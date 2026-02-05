@@ -48,10 +48,6 @@
       cursor: pointer;
     }
 
-    button:disabled {
-      background: #aaa;
-    }
-
     ul {
       list-style: none;
       padding: 0;
@@ -60,7 +56,7 @@
 
     li {
       display: flex;
-      justify-content:center;
+      justify-content: space-between;
       align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid #eee;
@@ -75,96 +71,98 @@
     }
 
     #sugerencias {
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        max-height: 150px;
-        overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      max-height: 150px;
+      overflow-y: auto;
     }
 
     #sugerencias li {
-        padding: 8px;
-        cursor: pointer;
+      padding: 8px;
+      cursor: pointer;
     }
 
     #sugerencias li:hover {
-        background: #eee;
+      background: #eee;
     }
-        </style>
+  </style>
 </head>
+
 <body>
 
-  <h1>Inventario</h1>
+<h1>Inventario</h1>
 
-  <!-- FORMULARIO -->
-  <div class="card">
-    <label>Producto</label>
-    <input type="text" id="productoInput" placeholder="Escribe para buscar..." />
-    <ul id="sugerencias"></ul>
+<!-- FORMULARIO -->
+<div class="card">
+  <label>Producto</label>
+  <input type="text" id="productoInput" placeholder="Escribe para buscar..." />
+  <ul id="sugerencias"></ul>
 
-    <!-- aquí después va el listado reactivo -->
+  <label>Unidad</label>
+  <select id="unidadSelect">
+    <option value="unidad">Unidad</option>
+    <option value="kilos">Kilos</option>
+    <option value="bandeja">Bandeja</option>
+    <option value="pieza">Pieza</option>
+    <option value="bolsa">Bolsa</option>
+  </select>
 
-    <label>Unidad</label>
-    <select id="unidadSelect">
-      <option value="unidad">Unidad</option>
-      <option value="kilos">Kilos</option>
-      <option value="bandeja">Bandeja</option>
-      <option value="pieza">Pieza</option>
-      <option value="bolsa">Bolsa</option>
-    </select>
+  <label>Cantidad</label>
+  <input type="number" id="cantidadInput" step="0.01" placeholder="Ej: 2 o 3.5" />
 
-    <label>Cantidad</label>
-    <input type="number" id="cantidadInput" step="0.01" placeholder="Ej: 2 o 3.5" />
+  <button id="agregarBtn">Agregar a la lista</button>
+</div>
 
-    <button id="agregarBtn">Agregar a la lista</button>
-  </div>
+<!-- LISTA -->
+<div class="card">
+  <h3>Lista de inventario</h3>
+  <ul id="listaInventario"></ul>
+</div>
 
-  <!-- LISTA GENERADA -->
-  <div class="card">
-    <h3>Lista de inventario</h3>
-    <ul id="listaInventario"></ul>
-  </div>
+<!-- ACCIÓN -->
+<div class="card">
+  <button id="descargarBtn">Generar ticket (IMG)</button>
+</div>
 
-  <!-- ACCIONES -->
-  <div class="card">
-    <button id="descargarBtn">Generar ticket (IMG)</button>
-  </div>
+<script>
+/**********************
+ * DATOS SIMULADOS
+ **********************/
+const productos = [
+  "Confort",
+  "Carne molida",
+  "Pollo entero",
+  "Pechuga de pollo",
+  "Costillar de cerdo",
+  "Longaniza",
+  "Vienesa",
+  "Hamburguesa",
+  "Carne mechada",
+  "Chuleta de cerdo"
+];
 
-  <script>
-    /****************************
-     * DATOS SIMULADOS (BD)
-     ****************************/
-    const productos = [
-      "Confort",
-      "Carne molida",
-      "Pollo entero",
-      "Pechuga de pollo",
-      "Costillar de cerdo",
-      "Longaniza",
-      "Vienesa",
-      "Hamburguesa",
-      "Carne mechada",
-      "Chuleta de cerdo"
-    ];
+let inventario = [];
 
-    // Lista de inventario generada
-    let inventario = [];
+const productoInput = document.getElementById("productoInput");
+const sugerencias = document.getElementById("sugerencias");
+const unidadSelect = document.getElementById("unidadSelect");
+const cantidadInput = document.getElementById("cantidadInput");
+const agregarBtn = document.getElementById("agregarBtn");
+const listaInventario = document.getElementById("listaInventario");
+const descargarBtn = document.getElementById("descargarBtn");
 
-    console.log("Productos cargados:", productos);
+/**********************
+ * FILTRO REACTIVO
+ **********************/
+productoInput.addEventListener("input", () => {
+  const texto = productoInput.value.toLowerCase();
+  sugerencias.innerHTML = "";
 
-    const productoInput = document.getElementById("productoInput");
-  const sugerencias = document.getElementById("sugerencias");
+  if (texto === "") return;
 
-  productoInput.addEventListener("input", () => {
-    const texto = productoInput.value.toLowerCase();
-    sugerencias.innerHTML = "";
-
-    if (texto === "") return;
-
-    const resultados = productos.filter(p =>
-      p.toLowerCase().includes(texto)
-    );
-
-    resultados.forEach(producto => {
+  productos
+    .filter(p => p.toLowerCase().includes(texto))
+    .forEach(producto => {
       const li = document.createElement("li");
       li.textContent = producto;
 
@@ -175,14 +173,12 @@
 
       sugerencias.appendChild(li);
     });
-  });
+});
 
-    const unidadSelect = document.getElementById("unidadSelect");
-    const cantidadInput = document.getElementById("cantidadInput");
-    const agregarBtn = document.getElementById("agregarBtn");
-    const listaInventario = document.getElementById("listaInventario");
-
-    agregarBtn.addEventListener("click", () => {
+/**********************
+ * AGREGAR PRODUCTO
+ **********************/
+agregarBtn.addEventListener("click", () => {
   const producto = productoInput.value.trim();
   const unidad = unidadSelect.value;
   const cantidad = parseFloat(cantidadInput.value);
@@ -193,15 +189,16 @@
   }
 
   inventario.push({ producto, unidad, cantidad });
-
   renderInventario();
 
-  // limpiar inputs
   productoInput.value = "";
   cantidadInput.value = "";
   sugerencias.innerHTML = "";
 });
 
+/**********************
+ * RENDER LISTA
+ **********************/
 function renderInventario() {
   listaInventario.innerHTML = "";
 
@@ -209,9 +206,7 @@ function renderInventario() {
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>
-        ${item.producto} - ${item.cantidad} ${item.unidad}
-      </span>
+      <span>${item.producto} - ${item.cantidad} ${item.unidad}</span>
       <button class="remove">❌</button>
     `;
 
@@ -224,19 +219,16 @@ function renderInventario() {
   });
 }
 
-const descargarBtn = document.getElementById("descargarBtn");
-
-fconst descargarBtn = document.getElementById("descargarBtn");
-
+/**********************
+ * GENERAR IMAGEN
+ **********************/
 descargarBtn.addEventListener("click", () => {
   if (inventario.length === 0) {
-    alert("No hay productos en la lista para imprimir");
+    alert("No hay productos para imprimir");
     return;
   }
 
   generarImagenTicket();
-
-  // limpiar inventario después de generar
   inventario = [];
   renderInventario();
 });
@@ -245,54 +237,47 @@ function generarImagenTicket() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  const ancho = 384; // ancho típico impresora térmica 58mm
+  const ancho = 384;
   const padding = 20;
-  const lineHeight = 36;
   const fontSize = 28;
-
-  const alto =
-    padding * 2 +
-    lineHeight * (inventario.length + 4);
+  const lineHeight = 36;
+  const alto = padding * 2 + lineHeight * (inventario.length + 4);
 
   canvas.width = ancho;
   canvas.height = alto;
 
-  // fondo blanco
   ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, ancho, alto);
 
-  // texto
   ctx.fillStyle = "#000";
   ctx.font = `bold ${fontSize}px monospace`;
   ctx.textAlign = "center";
 
   let y = padding + fontSize;
-
   ctx.fillText("INVENTARIO", ancho / 2, y);
-  y += lineHeight;
 
   ctx.font = `${fontSize}px monospace`;
-  ctx.fillText("--------------------", ancho / 2, y);
   y += lineHeight;
+  ctx.fillText("--------------------", ancho / 2, y);
 
   ctx.textAlign = "left";
+  y += lineHeight;
 
   inventario.forEach(item => {
-    const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
-    ctx.fillText(texto, padding, y);
+    ctx.fillText(
+      `${item.producto} - ${item.cantidad} ${item.unidad}`,
+      padding,
+      y
+    );
     y += lineHeight;
   });
 
-  ctx.textAlign = "center";
-  ctx.fillText("--------------------", ancho / 2, y);
-
-  // descargar imagen
   const link = document.createElement("a");
   link.download = `inventario_${new Date().toISOString().slice(0,10)}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
 }
-  </script>
+</script>
 
 </body>
 </html>
