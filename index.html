@@ -1,233 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventario Carnicería</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inventario Carnicería</title>
 
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 16px;
-    }
+<style>
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 16px;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    .card {
-      background: #fff;
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
 
-    label {
-      display: block;
-      font-weight: 600;
-      margin-top: 12px;
-      margin-bottom: 4px;
-    }
+label {
+  display: block;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
 
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
 
-    button {
-      background: #111;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+button {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+button:hover {
+  opacity: 0.9;
+}
 
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-    .remove {
-      background: #c62828;
-      padding: 6px 10px;
-      font-size: 14px;
-      width: 3em;
-      margin-left: 10px;
-    }
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
 
-    #sugerencias {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
+.remove {
+  background: #c62828;
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 3em;
+  margin-left: 10px;
+}
 
-    #sugerencias li {
-      padding: 8px;
-      cursor: pointer;
-    }
+#resetBtn {
+  background: #444;
+}
 
-    #sugerencias li:hover {
-      background: #eee;
-    }
-  </style>
+#sugerencias {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+#sugerencias li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+#sugerencias li:hover {
+  background: #eee;
+}
+</style>
 </head>
 
 <body>
 
 <h1>Inventario</h1>
 
-<!-- FORMULARIO -->
 <div class="card">
-  <label>Producto</label>
-  <input type="text" id="productoInput" placeholder="Escribe para buscar..." />
-  <ul id="sugerencias"></ul>
+<label>Producto</label>
+<input type="text" id="productoInput" placeholder="Escribe para buscar..." />
+<ul id="sugerencias"></ul>
 
-  <label>Unidad</label>
-  <select id="unidadSelect">
-    <option value="unidad">Unidad</option>
-    <option value="kilos">Kilos</option>
-    <option value="bandeja">Bandeja</option>
-    <option value="pieza">Pieza</option>
-    <option value="bolsa">Bolsa</option>
-  </select>
+<label>Unidad</label>
+<select id="unidadSelect">
+  <option value="unidad">Unidad</option>
+  <option value="kilos">Kilos</option>
+  <option value="bandeja">Bandeja</option>
+  <option value="pieza">Pieza</option>
+  <option value="bolsa">Bolsa</option>
+</select>
 
-  <label>Cantidad</label>
-  <input type="number" id="cantidadInput" step="0.01" placeholder="Ej: 2 o 3.5" />
+<label>Cantidad</label>
+<input type="number" id="cantidadInput" step="0.01" placeholder="Ej: 2 o 3.5" />
 
-  <button id="agregarBtn">Agregar a la lista</button>
+<button id="agregarBtn">Agregar a la lista</button>
 </div>
 
-<!-- LISTA -->
 <div class="card">
-  <h3>Lista de inventario</h3>
-  <ul id="listaInventario"></ul>
+<h3>Lista de inventario</h3>
+<ul id="listaInventario"></ul>
 </div>
 
-<!-- ACCIÓN -->
 <div class="card">
-  <button id="descargarBtn">Generar ticket (IMG)</button>
+<button id="descargarBtn">Generar Ticket (PNG + PDF)</button>
+<button id="resetBtn">Resetear Inventario</button>
 </div>
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 /**********************
- * DATOS SIMULADOS
+ * DATOS
  **********************/
-const productos = [
-"Arvejas 200gr",
-"Arerjas 1kg",
-"Cebolla cubo 150gr",
-"Champiñones 500gr",
-"Choclo grano 1kg",
-"Choclo grano 200gr",
-"Choclo trozo 200gr",
-"Crocante de pollo",
-"Habas 500gr",
-"Hamb. Crianza pollo",
-"Hamb. Crianza soya",
-"Hamb. Crianza vacuno",
-"Hamb. King pollo",
-"Hamb. King vacuno",
-"Hamb. Mastodonte",
-"Hamb. King kong",
-"Nugguets pollo 400gr",
-"Papas americanas french 1kg",
-"Papas americanas french 2.5kg",
-"Papas duquesas 1kg",
-"Papas prefritas 1kg",
-"Pasta de choclo 1kg",
-"Porotos granados 500gr",
-"Porotos verdes 150gr",
-"Primavera 1kg",
-"Chapsui 500gr",
-"Surtido de marisco",
-"Sofritos",
-"Zapallo cubo",
-"Abastero",
-"Asiento",
-"Carnicero",
-"Choclillo",
-"Entraña",
-"Filete",
-"Ganso",
-"Huachalomo",
-"Lomo liso",
-"Lomo vetado",
-"Palanca",
-"Plateada",
-"Pollo ganso",
-"Posta negra",
-"Posta paleta",
-"Posta rosada",
-"Punta de ganso",
-"Punta paleta",
-"Punta picana",
-"Punta de ganao",
-"Sobrecostilla",
-"Tapabarriga",
-"Tapapecho",
-"Molida corriente",
-"Molida especial",
-"Guata",
-"Corazon de vacuno",
-"Pana de vacuno",
-"Pata de vacuno",
-"Lengua de vacuno",
-"Ubre",
-"Chunchules",
-"Cauela cogote",
-"Aletilla",
-"Asado de tira",
-"Cola de vacuno",
-"Coluda",
-"Osobuco",
-"Hueso carnudo",
-"Trutro entero",
-"Trutro de ala",
-"Pollo entero",
-"Pechuga entera",
-"Pechuga deshesada de pollo",
-"Aviones",
-"Patas de pollo",
-"Contre",
-"Pana de pollo",
-"Cogote de pollo",
-"Corazon de pollo",
-"Costillar de cerdo",
-"Chuleta de centro",
-"Chuleta vetada",
-"Pulpa deshuesada",
-"Pulpa con hueso",
-"Paleta de cerdo",
-"Cazuela de cerdo",
-"Lomo de cerdo",
-"Pernil mano",
-"Manítos de cerdo",
-"Panceta de cerdo",
-"Manteca de cerdo",
-"Cuero de cerdo",
-"Cabeza de cero",
-"Longaniza de chillan",
-"Longaniza dña maria",
-"Prietas",
-"Chorizos"
-];
-let inventario = [];
+const productos = [ /* TU ARRAY ORIGINAL COMPLETO AQUÍ (sin cambios) */ ];
+
+let inventario = JSON.parse(localStorage.getItem("inventario")) || [];
 
 const productoInput = document.getElementById("productoInput");
 const sugerencias = document.getElementById("sugerencias");
@@ -236,9 +148,17 @@ const cantidadInput = document.getElementById("cantidadInput");
 const agregarBtn = document.getElementById("agregarBtn");
 const listaInventario = document.getElementById("listaInventario");
 const descargarBtn = document.getElementById("descargarBtn");
+const resetBtn = document.getElementById("resetBtn");
 
 /**********************
- * FILTRO REACTIVO
+ * GUARDAR EN LOCALSTORAGE
+ **********************/
+function guardarInventario() {
+  localStorage.setItem("inventario", JSON.stringify(inventario));
+}
+
+/**********************
+ * FILTRO
  **********************/
 productoInput.addEventListener("input", () => {
   const texto = productoInput.value.toLowerCase();
@@ -251,18 +171,16 @@ productoInput.addEventListener("input", () => {
     .forEach(producto => {
       const li = document.createElement("li");
       li.textContent = producto;
-
       li.addEventListener("click", () => {
         productoInput.value = producto;
         sugerencias.innerHTML = "";
       });
-
       sugerencias.appendChild(li);
     });
 });
 
 /**********************
- * AGREGAR PRODUCTO
+ * AGREGAR
  **********************/
 agregarBtn.addEventListener("click", () => {
   const producto = productoInput.value.trim();
@@ -275,6 +193,7 @@ agregarBtn.addEventListener("click", () => {
   }
 
   inventario.push({ producto, unidad, cantidad });
+  guardarInventario();
   renderInventario();
 
   productoInput.value = "";
@@ -283,7 +202,7 @@ agregarBtn.addEventListener("click", () => {
 });
 
 /**********************
- * RENDER LISTA
+ * RENDER
  **********************/
 function renderInventario() {
   listaInventario.innerHTML = "";
@@ -298,6 +217,7 @@ function renderInventario() {
 
     li.querySelector(".remove").addEventListener("click", () => {
       inventario.splice(index, 1);
+      guardarInventario();
       renderInventario();
     });
 
@@ -305,29 +225,107 @@ function renderInventario() {
   });
 }
 
+renderInventario();
+
 /**********************
- * GENERAR IMAGEN
+ * GENERAR PNG PAGINADO
  **********************/
-descargarBtn.addEventListener("click", () => {
+descargarBtn.addEventListener("click", async () => {
   if (inventario.length === 0) {
-    alert("No hay productos para imprimir");
+    alert("No hay productos");
     return;
   }
 
-  generarImagenTicket();
-  inventario = [];
-  renderInventario();
+  await generarPNGsPaginados();
+  generarPDFRespaldo();
 });
 
-  function drawTextWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+function dividirEnPaginas(array, tamaño) {
+  const paginas = [];
+  for (let i = 0; i < array.length; i += tamaño) {
+    paginas.push(array.slice(i, i + tamaño));
+  }
+  return paginas;
+}
+
+async function generarPNGsPaginados() {
+  const paginas = dividirEnPaginas(inventario, 10);
+  const fecha = new Date().toISOString().slice(0,10);
+
+  for (let i = 0; i < paginas.length; i++) {
+    generarImagenTicket(paginas[i], i + 1, fecha);
+    await new Promise(resolve => setTimeout(resolve, 400));
+  }
+}
+
+function generarImagenTicket(items, numeroPagina, fecha) {
+  const ancho = 384;
+  const padding = 20;
+  const fontSize = 24;
+  const lineHeight = 32;
+
+  const canvasTemp = document.createElement("canvas");
+  const ctxTemp = canvasTemp.getContext("2d");
+  ctxTemp.font = `${fontSize}px monospace`;
+
+  let alturaNecesaria = padding * 2 + 100;
+
+  items.forEach(item => {
+    const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
+    const palabras = texto.split(" ");
+    let linea = "";
+    palabras.forEach(p => {
+      const test = linea + p + " ";
+      if (ctxTemp.measureText(test).width > ancho - padding*2) {
+        alturaNecesaria += lineHeight;
+        linea = p + " ";
+      } else {
+        linea = test;
+      }
+    });
+    alturaNecesaria += lineHeight * 2; // texto + separador
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = ancho;
+  canvas.height = alturaNecesaria;
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,ancho,alturaNecesaria);
+
+  ctx.fillStyle = "#000";
+  ctx.font = `bold ${fontSize}px monospace`;
+  ctx.textAlign = "center";
+
+  let y = padding + fontSize;
+  ctx.fillText(`INVENTARIO - Pag ${numeroPagina}`, ancho/2, y);
+
+  ctx.textAlign = "left";
+  ctx.font = `${fontSize}px monospace`;
+  y += lineHeight;
+
+  items.forEach(item => {
+    const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
+    y = drawTextWrapped(ctx, texto, padding, y, ancho - padding*2, lineHeight);
+    ctx.fillText("--------------------------------", padding, y);
+    y += lineHeight;
+  });
+
+  const link = document.createElement("a");
+  link.download = `inventario_${fecha}_${numeroPagina}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+function drawTextWrapped(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(" ");
   let line = "";
 
   for (let i = 0; i < words.length; i++) {
     const testLine = line + words[i] + " ";
-    const metrics = ctx.measureText(testLine);
-
-    if (metrics.width > maxWidth && i > 0) {
+    if (ctx.measureText(testLine).width > maxWidth && i > 0) {
       ctx.fillText(line, x, y);
       line = words[i] + " ";
       y += lineHeight;
@@ -340,58 +338,44 @@ descargarBtn.addEventListener("click", () => {
   return y + lineHeight;
 }
 
-function generarImagenTicket() {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+/**********************
+ * PDF RESPALDO
+ **********************/
+function generarPDFRespaldo() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-  const ancho = 384;
-  const padding = 20;
- const fontSize = 24;
-const lineHeight = 32;
-  const alto = 1200;
+  let y = 20;
+  doc.setFont("courier");
 
-  canvas.width = ancho;
-  canvas.height = alto;
+  doc.text("INVENTARIO COMPLETO", 20, y);
+  y += 10;
 
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, ancho, alto);
+  inventario.forEach(item => {
+    const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
+    doc.text(texto, 20, y);
+    y += 8;
 
-  ctx.fillStyle = "#000";
-  ctx.font = `bold ${fontSize}px monospace`;
-  ctx.textAlign = "center";
+    if (y > 280) {
+      doc.addPage();
+      y = 20;
+    }
+  });
 
-  let y = padding + fontSize;
-  ctx.fillText("INVENTARIO", ancho / 2, y);
-
-  ctx.font = `${fontSize}px monospace`;
-  y += lineHeight;
-  ctx.fillText("--------------------", ancho / 2, y);
-
-  ctx.textAlign = "left";
-  y += lineHeight;
-
-inventario.forEach(item => {
-  const texto = `${item.producto} - ${item.cantidad} ${item.unidad}`;
-  y = drawTextWrapped(
-    ctx,
-    texto,
-    padding,
-    y,
-    ancho - padding * 2,
-    lineHeight
-  );
-});
-
-  const link = document.createElement("a");
-  link.download = `inventario_${new Date().toISOString().slice(0,10)}.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
+  doc.save("inventario_respaldo.pdf");
 }
+
+/**********************
+ * RESET
+ **********************/
+resetBtn.addEventListener("click", () => {
+  if (confirm("¿Seguro que deseas borrar el inventario?")) {
+    inventario = [];
+    guardarInventario();
+    renderInventario();
+  }
+});
 </script>
 
 </body>
 </html>
-
-
-
-
