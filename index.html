@@ -2,104 +2,83 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Inventario Carnicería</title>
 
 <style>
-body {
-  margin: 0;
-  padding: 0;
-  background: white;
+body{
+  margin:0;
+  background:#f4f4f4;
+  font-family:Arial, sans-serif;
 }
 
-.ticket {
-  background: white;
-  margin: 0;
-  padding: 0;
-  box-shadow: none;
-  width: 300px;
-}
-  
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+h1{
+  text-align:center;
+  margin:20px 0;
 }
 
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:8px;
+  margin:16px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 
-label {
-  display: block;
-  font-weight: 600;
-  margin-top: 12px;
-  margin-bottom: 4px;
+label{
+  display:block;
+  font-weight:600;
+  margin-top:12px;
+  margin-bottom:4px;
 }
 
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  margin-bottom: 10px;
+input,select,button{
+  width:100%;
+  padding:10px;
+  font-size:16px;
+  margin-bottom:10px;
 }
 
-button {
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+button{
+  background:#111;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
 }
 
-button:hover {
-  opacity: 0.9;
+button:hover{opacity:.9}
+
+ul{list-style:none;padding:0;margin:0}
+
+li{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+  flex-wrap:wrap;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.remove{
+  background:#c62828;
+  padding:6px 10px;
+  font-size:14px;
+  width:3em;
+  margin-left:10px;
 }
 
-li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+#resetBtn{background:#444}
+
+#sugerencias{
+  border:1px solid #ddd;
+  border-radius:6px;
+  max-height:150px;
+  overflow-y:auto;
 }
 
-.remove {
-  background: #c62828;
-  padding: 6px 10px;
-  font-size: 14px;
-  width: 3em;
-  margin-left: 10px;
-}
-
-#resetBtn {
-  background: #444;
-}
-
-#sugerencias {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  max-height: 150px;
-  overflow-y: auto;
-}
-
-#sugerencias li {
-  padding: 8px;
-  cursor: pointer;
-}
-
-#sugerencias li:hover {
-  background: #eee;
-}
+#sugerencias li{padding:8px;cursor:pointer}
+#sugerencias li:hover{background:#eee}
 </style>
 </head>
 
@@ -115,7 +94,7 @@ li {
 <label>Unidad</label>
 <select id="unidadSelect">
   <option value="unidad">Unidad</option>
-  <option value="kilos">Kilos</option>
+  <option value="kg">KG</option>
   <option value="bandeja">Bandeja</option>
   <option value="pieza">Pieza</option>
   <option value="bolsa">Bolsa</option>
@@ -133,13 +112,9 @@ li {
 </div>
 
 <div class="card">
-<button id="descargarBtn">Generar Ticket (PNG + PDF)</button>
+<button id="descargarBtn">Imprimir Ticket</button>
 <button id="resetBtn">Resetear Inventario</button>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <script>
 const productos = [
@@ -173,164 +148,116 @@ const productoInput = document.getElementById("productoInput");
 const sugerencias = document.getElementById("sugerencias");
 const unidadSelect = document.getElementById("unidadSelect");
 const cantidadInput = document.getElementById("cantidadInput");
-const agregarBtn = document.getElementById("agregarBtn");
 const listaInventario = document.getElementById("listaInventario");
-const descargarBtn = document.getElementById("descargarBtn");
-const resetBtn = document.getElementById("resetBtn");
 
-function guardarInventario() {
+function guardarInventario(){
   localStorage.setItem("inventario", JSON.stringify(inventario));
 }
 
-productoInput.addEventListener("input", () => {
-  const texto = productoInput.value.toLowerCase();
-  sugerencias.innerHTML = "";
-  if (texto === "") return;
+/* BUSCADOR */
+productoInput.addEventListener("input", ()=>{
+  const t = productoInput.value.toLowerCase();
+  sugerencias.innerHTML="";
+  if(!t) return;
 
-  productos.filter(p => p.toLowerCase().includes(texto))
-  .forEach(producto => {
-    const li = document.createElement("li");
-    li.textContent = producto;
-    li.onclick = () => {
-      productoInput.value = producto;
-      sugerencias.innerHTML = "";
+  productos.filter(p=>p.toLowerCase().includes(t))
+  .forEach(p=>{
+    const li=document.createElement("li");
+    li.textContent=p;
+    li.onclick=()=>{
+      productoInput.value=p;
+      sugerencias.innerHTML="";
     };
     sugerencias.appendChild(li);
   });
 });
 
-agregarBtn.addEventListener("click", () => {
-  const producto = productoInput.value.trim();
-  const unidad = unidadSelect.value;
-  const cantidad = parseFloat(cantidadInput.value);
+/* AUTO SUMA + ORDEN */
+document.getElementById("agregarBtn").onclick=()=>{
+  const producto=productoInput.value.trim();
+  const unidad=unidadSelect.value;
+  const cantidad=parseFloat(cantidadInput.value);
 
-  if (!producto || isNaN(cantidad) || cantidad <= 0) {
-    alert("Completa correctamente el producto y la cantidad");
+  if(!producto || isNaN(cantidad) || cantidad<=0){
+    alert("Completa correctamente");
     return;
   }
 
-  inventario.push({ producto, unidad, cantidad });
-  guardarInventario();
-  renderInventario();
-  productoInput.value = "";
-  cantidadInput.value = "";
-  sugerencias.innerHTML = "";
-});
+  const ex=inventario.find(i=>i.producto===producto && i.unidad===unidad);
 
-function renderInventario() {
-  listaInventario.innerHTML = "";
-  inventario.forEach((item, index) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${item.producto} - ${item.cantidad} ${item.unidad}</span>
+  if(ex) ex.cantidad+=cantidad;
+  else inventario.push({producto,unidad,cantidad});
+
+  inventario.sort((a,b)=>a.producto.localeCompare(b.producto));
+
+  guardarInventario();
+  render();
+  productoInput.value="";
+  cantidadInput.value="";
+  sugerencias.innerHTML="";
+};
+
+function render(){
+  listaInventario.innerHTML="";
+  inventario.forEach((it,i)=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<span>${it.producto} - ${it.cantidad.toFixed(2)} ${it.unidad}</span>
     <button class="remove">❌</button>`;
-    li.querySelector(".remove").onclick = () => {
-      inventario.splice(index, 1);
+    li.querySelector(".remove").onclick=()=>{
+      inventario.splice(i,1);
       guardarInventario();
-      renderInventario();
+      render();
     };
     listaInventario.appendChild(li);
   });
 }
+render();
 
-renderInventario();
+/* IMPRESIÓN TÉRMICA */
+document.getElementById("descargarBtn").onclick=()=>{
+  if(!inventario.length){alert("No hay productos");return;}
 
-descargarBtn.addEventListener("click", async () => {
-  if (inventario.length === 0) {
-    alert("No hay productos");
-    return;
-  }
-  await generarZIP();
-  generarPDFRespaldo();
-});
+  const fecha=new Date();
+  const fechaStr=fecha.toLocaleDateString()+" "+fecha.toLocaleTimeString();
 
-function dividirEnPaginas(array, tamaño) {
-  const paginas = [];
-  for (let i = 0; i < array.length; i += tamaño) {
-    paginas.push(array.slice(i, i + tamaño));
-  }
-  return paginas;
-}
+  let contenido=`<div style="width:72mm;font-family:monospace;font-size:12px">
+  <div style="text-align:center;font-weight:bold">INVENTARIO</div>
+  <div style="text-align:center">${fechaStr}</div>
+  <hr>`;
 
-async function generarZIP() {
-  const paginas = dividirEnPaginas(inventario, 10);
-  const fecha = new Date().toISOString().slice(0,10);
-  const zip = new JSZip();
-
-  for (let i = 0; i < paginas.length; i++) {
-    const canvas = generarCanvasTicket(paginas[i], i + 1);
-    const base64 = canvas.toDataURL("image/png").split(",")[1];
-    zip.file(`inventario_${fecha}_${i+1}.png`, base64, {base64:true});
-  }
-
-  const contenido = await zip.generateAsync({type:"blob"});
-  saveAs(contenido, `inventario_${fecha}.zip`);
-}
-
-function generarCanvasTicket(items, numeroPagina) {
-  const ancho = 384;
-  const padding = 20;
-  const fontSize = 24;
-  const lineHeight = 32;
-
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.font = `${fontSize}px monospace`;
-
-  let altura = padding*2 + 100 + items.length * lineHeight * 3;
-  canvas.width = ancho;
-  canvas.height = altura;
-
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0,0,ancho,altura);
-
-  ctx.fillStyle = "#000";
-  ctx.font = `bold ${fontSize}px monospace`;
-  ctx.textAlign = "center";
-
-  let y = padding + fontSize;
-  ctx.fillText(`INVENTARIO - Pag ${numeroPagina}`, ancho/2, y);
-
-  ctx.textAlign = "left";
-  ctx.font = `${fontSize}px monospace`;
-  y += lineHeight;
-
-  items.forEach(item => {
-    ctx.fillText(`${item.producto} - ${item.cantidad} ${item.unidad}`, padding, y);
-    y += lineHeight;
-    ctx.fillText("--------------------------------", padding, y);
-    y += lineHeight;
+  inventario.forEach(i=>{
+    contenido+=`<div>${i.producto} - ${i.cantidad.toFixed(2)} ${i.unidad}</div>
+    <div>--------------------------------</div>`;
   });
 
-  return canvas;
-}
+  contenido+=`</div>`;
 
-function generarPDFRespaldo() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y = 20;
-  doc.setFont("courier");
-  doc.text("INVENTARIO COMPLETO", 20, y);
-  y += 10;
+  const w=window.open("","","width=300,height=600");
+  w.document.write(`
+    <html>
+    <head>
+      <style>
+        body{margin:0}
+        @page{size:80mm auto;margin:0}
+      </style>
+    </head>
+    <body>${contenido}</body>
+    </html>
+  `);
 
-  inventario.forEach(item => {
-    doc.text(`${item.producto} - ${item.cantidad} ${item.unidad}`, 20, y);
-    y += 8;
-    if (y > 280) {
-      doc.addPage();
-      y = 20;
-    }
-  });
+  w.document.close();
+  w.focus();
+  w.print();
+};
 
-  doc.save("inventario_respaldo.pdf");
-}
-
-resetBtn.addEventListener("click", () => {
-  if (confirm("¿Seguro que deseas borrar el inventario?")) {
-    inventario = [];
+/* RESET */
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("¿Seguro que deseas borrar el inventario?")){
+    inventario=[];
     guardarInventario();
-    renderInventario();
+    render();
   }
-});
+};
 </script>
 
 </body>
